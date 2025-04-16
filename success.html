@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web3 Preloader</title>
+    <style>
+        /* Basic Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Fullscreen Background */
+        body, html {
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #1e2a47, #3d5a80);
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+        }
+
+        /* Preloader styling */
+        .preloader {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            text-align: center;
+            font-size: 18px;
+        }
+
+        /* Loader Container */
+        .loader-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+            animation: loadingAnimation 2s infinite ease-in-out;
+        }
+
+        /* Dot Styling */
+        .dot {
+            width: 20px;
+            height: 20px;
+            margin: 0 8px;
+            border-radius: 50%;
+            background-color: #44ff99;
+            animation: dotAnimation 1.5s infinite ease-in-out;
+            box-shadow: 0 0 10px rgba(68, 255, 153, 0.6);
+        }
+
+        .dot:nth-child(1) {
+            animation-delay: 0s;
+        }
+
+        .dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        /* Text Style */
+        .preloader p {
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: #b0b0b0;
+            animation: fadeInText 1.5s ease-out 1s forwards;
+            letter-spacing: 1px;
+        }
+
+        /* Keyframes for Animation */
+        @keyframes loadingAnimation {
+            0% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-15px);
+            }
+            100% {
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes dotAnimation {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.5);
+                opacity: 0.6;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeInText {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+
+        /* Glowing Effect */
+        .glow {
+            text-shadow: 0 0 8px #44ff99, 0 0 20px #44ff99, 0 0 40px #44ff99;
+        }
+    </style>
+</head>
+<body>
+    <div class="preloader">
+        <div class="loader-container">
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+        </div>
+        <p class="glow">Connecting to Web3...</p>
+    </div>
+
+    <script>
+        // Keeps the preloader on page for a lifetime (no timeout)
+        // You can implement this to eventually hide or remove the preloader when ready.
+        window.addEventListener("load", function() {
+            // No timeouts or removal in this version. It stays indefinitely.
+        });
+    </script>
+</body>
+</html>
