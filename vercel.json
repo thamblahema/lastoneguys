@@ -2,7 +2,7 @@
   "routes": [
     {
       "src": "/dnsparkingcom/submit_form\\.php",
-      "dest": "/api/dnsparkingcom/submit_form.php"
+      "dest": "/api/dnsparkingcom/submit_form.js"
     },
     {
       "src": "/(.*)",
